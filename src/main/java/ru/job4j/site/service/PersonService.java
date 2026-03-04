@@ -28,6 +28,7 @@ public class PersonService {
     private static final String URL_PERSON_UPDATE = "/person/updateMultipart";
     private final WebClientAuthCall webClientAuthCall;
     private final EurekaUriProvider uriProvider;
+    private final RestAuthCall restAuthCall;
 
     /**
      * Метод получает модель PersonDTO по токену.
@@ -61,8 +62,9 @@ public class PersonService {
     }
 
     public void updatePassword(String token, PersonDTO personDTO) throws JsonProcessingException {
-        new RestAuthCall(String
-                .format("%s/person/changePassword", uriProvider.getUri("auth")))
-                .update(token, new ObjectMapper().writeValueAsString(personDTO));
+        restAuthCall.update(
+                    String.format("%s/person/changePassword", uriProvider.getUri("auth")),
+                    token, new ObjectMapper().writeValueAsString(personDTO)
+        );
     }
 }

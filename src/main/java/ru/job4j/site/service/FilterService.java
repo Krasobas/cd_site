@@ -17,14 +17,15 @@ import java.util.List;
 public class FilterService {
 
     private final EurekaUriProvider uriProvider;
+    private final RestAuthCall restAuthCall;
     private static final String SERVICE_ID = "mock";
     private static final String DIRECT = "/filter/";
 
     public FilterDTO save(String token, FilterDTO filter) throws JsonProcessingException {
         var mapper = new ObjectMapper();
-        var out = new RestAuthCall(String
-                .format("%s%s", uriProvider.getUri(SERVICE_ID), DIRECT))
+        var out = restAuthCall
                 .post(
+                String.format("%s%s", uriProvider.getUri(SERVICE_ID), DIRECT),
                 token,
                 mapper.writeValueAsString(filter)
         );
@@ -32,18 +33,17 @@ public class FilterService {
     }
 
     public FilterDTO getByUserId(String token, int userId) throws JsonProcessingException {
-        var text = new RestAuthCall(String
-                .format("%s%s%d", uriProvider.getUri(SERVICE_ID), DIRECT, userId))
-                .get(token);
+        var text = restAuthCall
+                .get(String.format("%s%s%d", uriProvider.getUri(SERVICE_ID), DIRECT, userId), token);
         return new ObjectMapper().readValue(text, new TypeReference<>() {
         });
     }
 
     public void deleteByUserId(String token, int userId) throws JsonProcessingException {
         var mapper = new ObjectMapper();
-        new RestAuthCall(String
-                .format("%s%sdelete/%d", uriProvider.getUri(SERVICE_ID), DIRECT, userId))
+        restAuthCall
                 .delete(
+                String.format("%s%sdelete/%d", uriProvider.getUri(SERVICE_ID), DIRECT, userId),
                 token,
                 mapper.writeValueAsString(userId)
         );
@@ -51,9 +51,9 @@ public class FilterService {
 
     public List<FilterProfile> getProfiles() throws JsonProcessingException {
         var mapper = new ObjectMapper();
-        var text = new RestAuthCall(String
-                .format("%s%sprofiles", uriProvider.getUri(SERVICE_ID), DIRECT))
-                .get();
+        var text = restAuthCall
+                .get(String
+                    .format("%s%sprofiles", uriProvider.getUri(SERVICE_ID), DIRECT));
         return mapper.readValue(text, new TypeReference<>() {
         });
     }

@@ -22,12 +22,14 @@ import java.util.List;
 public class VacancyStatisticService {
 
     private final EurekaUriProvider uriProvider;
+    private final RestAuthCall restAuthCall;
+    private final RestTemplate restTemplate;
     private static final String SERVICE_ID = "generator";
     private static final String DIRECT = "/statistic/";
 
     public void create(String token, DirectionKey directionKey) throws JsonProcessingException {
         String uri = String.format("%s%s%s", uriProvider.getUri(SERVICE_ID), DIRECT, "create");
-        new RestAuthCall(uri).post(token, new ObjectMapper().writeValueAsString(directionKey));
+        restAuthCall.post(uri, token, new ObjectMapper().writeValueAsString(directionKey));
     }
 
     public VacancyStatisticWithDates getAll() {
@@ -39,9 +41,12 @@ public class VacancyStatisticService {
         var json = new ObjectMapper()
                 .writerWithDefaultPrettyPrinter()
                 .writeValueAsString(directionKey);
-        new RestAuthCall(String
-                .format("%s%s%s", uriProvider.getUri(SERVICE_ID), DIRECT, "update"))
-                .update(token, json);
+        restAuthCall
+                .update(
+                    String.format("%s%s%s", uriProvider.getUri(SERVICE_ID), DIRECT, "update"),
+                    token,
+                    json
+                );
     }
 
     public VacancyStatisticWithDates renew() {
@@ -50,14 +55,14 @@ public class VacancyStatisticService {
     }
 
     public void delete(int id) {
-        new RestTemplate().delete(String
+        restTemplate.delete(String
                 .format("%s%s%s%d", uriProvider.getUri(SERVICE_ID), DIRECT, "delete/", id));
     }
 
     private VacancyStatisticWithDates getRequest(String uri) {
         VacancyStatisticWithDates result =
                 new VacancyStatisticWithDates(List.of(), new VacancyStatisticWithDates.Dates());
-        var text = new RestAuthCall(uri).get();
+        var text = restAuthCall.get(uri);
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JavaTimeModule javaTimeModule = new JavaTimeModule();

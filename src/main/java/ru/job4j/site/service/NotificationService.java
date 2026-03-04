@@ -19,6 +19,7 @@ import java.util.Optional;
 public class NotificationService {
 
     private final EurekaUriProvider uriProvider;
+    private final RestAuthCall restAuthCall;
     private static final String SERVICE_ID = "notification";
 
     public void addSubscribeCategory(String token, int userId, int categoryId) {
@@ -26,8 +27,8 @@ public class NotificationService {
         var mapper = new ObjectMapper();
         try {
             var url = String
-                    .format("%s/subscribeCategory/add", uriProvider.getUri(SERVICE_ID));
-            new RestAuthCall(url).post(token, mapper.writeValueAsString(subscribeCategory));
+                .format("%s/subscribeCategory/add", uriProvider.getUri(SERVICE_ID));
+            restAuthCall.post(url, token, mapper.writeValueAsString(subscribeCategory));
         } catch (Exception e) {
             log.error("API notification not found, error: {}", e.getMessage());
         }
@@ -38,8 +39,8 @@ public class NotificationService {
         var mapper = new ObjectMapper();
         try {
             var url = String
-                    .format("%s/subscribeCategory/delete", uriProvider.getUri(SERVICE_ID));
-            new RestAuthCall(url).post(token, mapper.writeValueAsString(subscribeCategory));
+                .format("%s/subscribeCategory/delete", uriProvider.getUri(SERVICE_ID));
+            restAuthCall.post(url, token, mapper.writeValueAsString(subscribeCategory));
         } catch (Exception e) {
             log.error("API notification not found, error: {}", e.getMessage());
         }
@@ -48,9 +49,9 @@ public class NotificationService {
     public Optional<UserDTO> findCategoriesByUserId(int id) {
         var mapper = new ObjectMapper();
         try {
-            var text = new RestAuthCall(String
-                    .format("%s/subscribeCategory/%d", uriProvider.getUri(SERVICE_ID), id))
-                    .get();
+            var url = String
+                .format("%s/subscribeCategory/%d", uriProvider.getUri(SERVICE_ID), id);
+            var text = restAuthCall.get(url);
             List<Integer> list = mapper.readValue(text, new TypeReference<>() {
             });
             return Optional.of(new UserDTO(id, list));
@@ -65,8 +66,7 @@ public class NotificationService {
         var mapper = new ObjectMapper();
         try {
             var url = String.format("%s/subscribeTopic/add", uriProvider.getUri(SERVICE_ID));
-            new RestAuthCall(url).post(
-                    token, mapper.writeValueAsString(subscribeTopicDTO));
+            restAuthCall.post(url, token, mapper.writeValueAsString(subscribeTopicDTO));
         } catch (Exception e) {
             log.error("API notification not found, error: {}", e.getMessage());
         }
@@ -77,9 +77,8 @@ public class NotificationService {
         var mapper = new ObjectMapper();
         try {
             var url = String
-                    .format("%s/subscribeTopic/delete", uriProvider.getUri(SERVICE_ID));
-            new RestAuthCall(url).post(
-                    token, mapper.writeValueAsString(subscribeTopic));
+                .format("%s/subscribeTopic/delete", uriProvider.getUri(SERVICE_ID));
+            restAuthCall.post(url, token, mapper.writeValueAsString(subscribeTopic));
         } catch (Exception e) {
             log.error("API notification not found, error: {}", e.getMessage());
         }
@@ -88,9 +87,9 @@ public class NotificationService {
     public Optional<UserTopicDTO> findTopicByUserId(int id) {
         var mapper = new ObjectMapper();
         try {
-            var text = new RestAuthCall(String
-                    .format("%s/subscribeTopic/%d", uriProvider.getUri(SERVICE_ID), id))
-                    .get();
+            var url = String
+                .format("%s/subscribeTopic/%d", uriProvider.getUri(SERVICE_ID), id);
+            var text = restAuthCall.get(url);
             List<Integer> list = mapper.readValue(text, new TypeReference<>() {
             });
             return Optional.of(new UserTopicDTO(id, list));
@@ -102,10 +101,10 @@ public class NotificationService {
 
     public List<InnerMessageDTO> findBotMessageByUserId(String token, int id) {
         var url = String
-                .format("%s/messages/actual/%d", uriProvider.getUri(SERVICE_ID), id);
+            .format("%s/messages/actual/%d", uriProvider.getUri(SERVICE_ID), id);
         var mapper = new ObjectMapper();
         try {
-            var text = new RestAuthCall(url).get(token);
+            var text = restAuthCall.get(url, token);
             return mapper.readValue(text, new TypeReference<>() {
             });
         } catch (Exception e) {
@@ -118,9 +117,9 @@ public class NotificationService {
                                              CategoryWithTopicDTO categoryAndTopicIds) {
         var mapper = new ObjectMapper();
         try {
-            new RestAuthCall(String
-                    .format("%s/messages/newInterview", uriProvider.getUri(SERVICE_ID)))
-                    .post(token, mapper.writeValueAsString(categoryAndTopicIds));
+            var url = String
+                .format("%s/messages/newInterview", uriProvider.getUri(SERVICE_ID));
+            restAuthCall.post(url, token, mapper.writeValueAsString(categoryAndTopicIds));
         } catch (Exception e) {
             log.error("API notification not found, error: {}", e.getMessage());
         }
@@ -130,8 +129,7 @@ public class NotificationService {
         var url = String.format("%s/messages/message", uriProvider.getUri(SERVICE_ID));
         var mapper = new ObjectMapper();
         try {
-            new RestAuthCall(url).post(
-                    token, mapper.writeValueAsString(innerMessage));
+            restAuthCall.post(url, token, mapper.writeValueAsString(innerMessage));
         } catch (Exception e) {
             log.error("API notification not found, error: {}", e.getMessage());
         }
@@ -142,8 +140,7 @@ public class NotificationService {
         var url = String.format("%s/feedback/interview", uriProvider.getUri(SERVICE_ID));
         var mapper = new ObjectMapper();
         try {
-            new RestAuthCall(url).post(
-                    token, mapper.writeValueAsString(feedbackNotification));
+            restAuthCall.post(url, token, mapper.writeValueAsString(feedbackNotification));
         } catch (Exception e) {
             log.error("API notification not found, error: {}", e.getMessage());
         }
@@ -159,11 +156,10 @@ public class NotificationService {
      */
     public void sendSubscribeTopic(String token, InterviewNotifyDTO interviewNotifyDTO) {
         var url = String
-                .format("%s/notification/topic/", uriProvider.getUri(SERVICE_ID));
+            .format("%s/notification/topic/", uriProvider.getUri(SERVICE_ID));
         var mapper = new ObjectMapper();
         try {
-            new RestAuthCall(url).post(
-                    token, mapper.writeValueAsString(interviewNotifyDTO));
+            restAuthCall.post(url, token, mapper.writeValueAsString(interviewNotifyDTO));
         } catch (Exception e) {
             log.error("API notification not found, error: {}", e.getMessage());
         }
@@ -178,11 +174,10 @@ public class NotificationService {
      */
     public void sendParticipateAuthor(String token, WisherNotifyDTO wisherNotifyDTO) {
         var url = String
-                .format("%s/notification/participate/", uriProvider.getUri(SERVICE_ID));
+            .format("%s/notification/participate/", uriProvider.getUri(SERVICE_ID));
         var mapper = new ObjectMapper();
         try {
-            new RestAuthCall(url).post(
-                    token, mapper.writeValueAsString(wisherNotifyDTO));
+            restAuthCall.post(url, token, mapper.writeValueAsString(wisherNotifyDTO));
         } catch (Exception e) {
             log.error("API notification not found, error: {}", e.getMessage());
         }
@@ -199,11 +194,10 @@ public class NotificationService {
     public void sendParticipateCancelInterview(String token,
                                                CancelInterviewNotificationDTO cancelInterviewDTO) {
         var url = String
-                .format("%s/notification/cancelInterview/", uriProvider.getUri(SERVICE_ID));
+            .format("%s/notification/cancelInterview/", uriProvider.getUri(SERVICE_ID));
         var mapper = new ObjectMapper();
         try {
-            new RestAuthCall(url).post(
-                    token, mapper.writeValueAsString(cancelInterviewDTO));
+            restAuthCall.post(url, token, mapper.writeValueAsString(cancelInterviewDTO));
         } catch (Exception e) {
             log.error("API notification not found, error: {}", e);
         }
@@ -220,11 +214,10 @@ public class NotificationService {
     public void sendParticipantIsDismissed(String token,
                                            List<WisherDismissedDTO> wisherDismissedDTOList) {
         var url = String
-                .format("%s/notification/participantIsDismissed/", uriProvider.getUri(SERVICE_ID));
+            .format("%s/notification/participantIsDismissed/", uriProvider.getUri(SERVICE_ID));
         var mapper = new ObjectMapper();
         try {
-            new RestAuthCall(url).post(
-                    token, mapper.writeValueAsString(wisherDismissedDTOList));
+            restAuthCall.post(url, token, mapper.writeValueAsString(wisherDismissedDTOList));
         } catch (Exception e) {
             log.error("API notification not found, error: {}", e);
         }
@@ -232,11 +225,10 @@ public class NotificationService {
 
     public void approvedWisher(String token, WisherApprovedDTO wisherApprovedDTO) {
         var url = String
-                .format("%s/notificationWisher/approvedWisher/", uriProvider.getUri(SERVICE_ID));
+            .format("%s/notificationWisher/approvedWisher/", uriProvider.getUri(SERVICE_ID));
         var mapper = new ObjectMapper();
         try {
-            var out = new RestAuthCall(url).post(
-                    token, mapper.writeValueAsString(wisherApprovedDTO));
+            var out = restAuthCall.post(url, token, mapper.writeValueAsString(wisherApprovedDTO));
         } catch (Exception e) {
             log.error("API notification not found, error: {}", e.getMessage());
         }

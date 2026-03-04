@@ -9,24 +9,22 @@ import ru.job4j.site.util.RestAuthCall;
 public class MessageService {
 
     private final EurekaUriProvider uriProvider;
+    private final RestAuthCall restAuthCall;
     private static final String SERVICE_ID = "notification";
     private static final String DIRECT = "/messages/";
 
     public void delete(String token, int messageId) {
-        new RestAuthCall(
-                String.format("%s%sdelete/%d", uriProvider.getUri(SERVICE_ID), DIRECT, messageId))
-                .delete(token, "");
+        var url = String.format("%s%sdelete/%d", uriProvider.getUri(SERVICE_ID), DIRECT, messageId);
+        restAuthCall.delete(url, token, "");
     }
 
     public void setRead(String token, int messageId) {
-        new RestAuthCall(
-                String.format("%s%smessages/setRead/%d", uriProvider.getUri(SERVICE_ID), DIRECT, messageId))
-                .put(token, "");
+        var url = String.format("%s%smessages/setRead/%d", uriProvider.getUri(SERVICE_ID), DIRECT, messageId);
+        restAuthCall.put(url, token, "");
     }
 
     public void setReadAll(String token, int userId) {
-        new RestAuthCall(
-                String.format("%s%ssetReadAll/%d", uriProvider.getUri(SERVICE_ID), DIRECT, userId))
-                .put(token, "");
+        var url = String.format("%s%ssetReadAll/%d", uriProvider.getUri(SERVICE_ID), DIRECT, userId);
+        restAuthCall.put(url, token, "");
     }
 }

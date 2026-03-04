@@ -23,23 +23,24 @@ public class CategoriesService {
     private final TopicsService topicsService;
     private final InterviewsService interviewsService;
     private final EurekaUriProvider uriProvider;
+    private final RestAuthCall restAuthCall;
     private static final String SERVICE_ID = "desc";
     private static final String DIRECT_SINGLE = "/category/";
     private static final String DIRECT_MULTIPLE = "/categories/";
 
     public List<CategoryDTO> getAll() throws JsonProcessingException {
-        var text = new RestAuthCall(String
-                .format("%s%s", uriProvider.getUri(SERVICE_ID), DIRECT_MULTIPLE))
-                .get();
+        var text = restAuthCall
+                .get(String
+                    .format("%s%s", uriProvider.getUri(SERVICE_ID), DIRECT_MULTIPLE));
         var mapper = new ObjectMapper();
         return mapper.readValue(text, new TypeReference<>() {
         });
     }
 
     public List<CategoryDTO> getPopularFromDesc() throws JsonProcessingException {
-        var text = new RestAuthCall(String
-                .format("%s%smost_pop", uriProvider.getUri(SERVICE_ID), DIRECT_MULTIPLE))
-                .get();
+        var text = restAuthCall
+                .get(String
+                    .format("%s%smost_pop", uriProvider.getUri(SERVICE_ID), DIRECT_MULTIPLE));
         var mapper = new ObjectMapper();
         return mapper.readValue(text, new TypeReference<>() {
         });
@@ -47,9 +48,9 @@ public class CategoriesService {
 
     public CategoryDTO create(String token, CategoryDTO category) throws JsonProcessingException {
         var mapper = new ObjectMapper();
-        var out = new RestAuthCall(String
-                .format("%s%s", uriProvider.getUri(SERVICE_ID), DIRECT_SINGLE))
+        var out = restAuthCall
                 .post(
+                String.format("%s%s", uriProvider.getUri(SERVICE_ID), DIRECT_SINGLE),
                 token,
                 mapper.writeValueAsString(category)
         );
@@ -58,8 +59,9 @@ public class CategoriesService {
 
     public void update(String token, CategoryDTO category) throws JsonProcessingException {
         var mapper = new ObjectMapper();
-        new RestAuthCall(String.format("%s%s", uriProvider.getUri(SERVICE_ID), DIRECT_SINGLE))
+        restAuthCall
                 .put(
+                String.format("%s%s", uriProvider.getUri(SERVICE_ID), DIRECT_SINGLE),
                 token,
                 mapper.writeValueAsString(category)
         );
@@ -136,9 +138,9 @@ public class CategoriesService {
     public Optional<Category> getById(int categoryId) {
         Optional<Category> result = Optional.empty();
         try {
-            var text = new RestAuthCall(String
-                    .format("%s%s%d", uriProvider.getUri(SERVICE_ID), DIRECT_SINGLE, categoryId))
-                    .get();
+            var text = restAuthCall
+                    .get(String
+                        .format("%s%s%d", uriProvider.getUri(SERVICE_ID), DIRECT_SINGLE, categoryId));
             var mapper = new ObjectMapper();
             result = Optional.of(mapper.readValue(text, new TypeReference<>() {
             }));

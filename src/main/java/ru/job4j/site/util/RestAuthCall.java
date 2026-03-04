@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
@@ -15,13 +16,13 @@ import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.util.Map;
 
+@Component
 @AllArgsConstructor
 @Slf4j
 public class RestAuthCall {
-    private final String url;
+    private final RestTemplate restTemplate;
 
-    public String get() {
-        var restTemplate = new RestTemplate();
+    public String get(String url) {
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         return restTemplate.exchange(url, HttpMethod.GET,
@@ -30,8 +31,7 @@ public class RestAuthCall {
         ).getBody();
     }
 
-    public String get(String token) {
-        var restTemplate = new RestTemplate();
+    public String get(String url, String token) {
         restTemplate.setErrorHandler(
                 new DefaultResponseErrorHandler() {
                     @Override
@@ -52,8 +52,7 @@ public class RestAuthCall {
         ).getBody();
     }
 
-    public String getWithHeaders(HttpHeaders headers) {
-        var restTemplate = new RestTemplate();
+    public String getWithHeaders(String url, HttpHeaders headers) {
         restTemplate.setErrorHandler(
                 new DefaultResponseErrorHandler() {
                     @Override
@@ -72,8 +71,7 @@ public class RestAuthCall {
         ).getBody();
     }
 
-    public String token(Map<String, String> params) {
-        var restTemplate = new RestTemplate();
+    public String token(String url, Map<String, String> params) {
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.set("Authorization", "Basic am9iNGo6cGFzc3dvcmQ=");
@@ -86,8 +84,7 @@ public class RestAuthCall {
         ).getBody();
     }
 
-    public String post(String token, String json) {
-        var restTemplate = new RestTemplate();
+    public String post(String url, String token, String json) {
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + token);
@@ -96,8 +93,7 @@ public class RestAuthCall {
         ).getBody();
     }
 
-    public void update(String token, String json) {
-        var restTemplate = new RestTemplate();
+    public void update(String url, String token, String json) {
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + token);
@@ -105,8 +101,7 @@ public class RestAuthCall {
         restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
     }
 
-    public void delete(String token, String json) {
-        var restTemplate = new RestTemplate();
+    public void delete(String url, String token, String json) {
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + token);
@@ -114,8 +109,7 @@ public class RestAuthCall {
         restTemplate.exchange(url, HttpMethod.DELETE, request, String.class);
     }
 
-    public void put(String token, String json) {
-        var restTemplate = new RestTemplate();
+    public void put(String url, String token, String json) {
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + token);

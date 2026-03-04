@@ -20,21 +20,22 @@ public class TopicsService {
 
     private final InterviewsService interviewsService;
     private final EurekaUriProvider uriProvider;
+    private final RestAuthCall restAuthCall;
     private static final String SERVICE_ID = "desc";
     private static final String DIRECT_SINGLE = "/topic/";
     private static final String DIRECT_MULTIPLE = "/topics/";
 
     public List<TopicDTO> getByCategory(int id) throws JsonProcessingException {
-        var text = new RestAuthCall(String
-                .format("%s%s%d", uriProvider.getUri(SERVICE_ID), DIRECT_MULTIPLE, id)).get();
+        var text = restAuthCall.get(String
+            .format("%s%s%d", uriProvider.getUri(SERVICE_ID), DIRECT_MULTIPLE, id));
         var mapper = new ObjectMapper();
         return mapper.readValue(text, new TypeReference<>() {
         });
     }
 
     public TopicDTO getById(int id) throws JsonProcessingException {
-        var text = new RestAuthCall(String
-                .format("%s%s%d", uriProvider.getUri(SERVICE_ID), DIRECT_SINGLE, id)).get();
+        var text = restAuthCall.get(String
+            .format("%s%s%d", uriProvider.getUri(SERVICE_ID), DIRECT_SINGLE, id));
         var mapper = new ObjectMapper();
         return mapper.readValue(text, new TypeReference<>() {
         });
@@ -50,7 +51,8 @@ public class TopicsService {
         category.setId(topicLite.getCategoryId());
         topic.setCategory(category);
         var text = String.format("%s%s", uriProvider.getUri(SERVICE_ID), DIRECT_SINGLE);
-        var out = new RestAuthCall(text).post(
+        var out = restAuthCall.post(
+                text,
                 token,
                 mapper.writeValueAsString(topic)
         );
@@ -62,7 +64,8 @@ public class TopicsService {
         topic.setUpdated(Calendar.getInstance());
         var json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(topic);
         var text = String.format("%s%s", uriProvider.getUri(SERVICE_ID), DIRECT_SINGLE);
-        new RestAuthCall(text).update(
+        restAuthCall.update(
+                text,
                 token,
                 json
         );
@@ -73,7 +76,8 @@ public class TopicsService {
         var topic = new TopicDTO();
         topic.setId(id);
         var text = String.format("%s%s", uriProvider.getUri(SERVICE_ID), DIRECT_SINGLE);
-        new RestAuthCall(text).delete(
+        restAuthCall.delete(
+                text,
                 token,
                 mapper.writeValueAsString(topic)
         );
@@ -82,7 +86,7 @@ public class TopicsService {
     public String getNameById(int id) {
         var text = String
                 .format("%s%sname/%d", uriProvider.getUri(SERVICE_ID), DIRECT_SINGLE, id);
-        return new RestAuthCall(text).get();
+        return restAuthCall.get(text);
     }
 
     public CategoryIdNameDTO getCategoryIdNameDTOByTopicId(int topicId)
@@ -95,9 +99,8 @@ public class TopicsService {
 
     public List<TopicIdNameDTO> getTopicIdNameDtoByCategory(int categoryId)
             throws JsonProcessingException {
-        var text = new
-                RestAuthCall(String.format("%s%sgetByCategoryId/%d",
-                uriProvider.getUri(SERVICE_ID), DIRECT_MULTIPLE, categoryId)).get();
+        var text = restAuthCall.get(String.format("%s%sgetByCategoryId/%d",
+            uriProvider.getUri(SERVICE_ID), DIRECT_MULTIPLE, categoryId));
         var mapper = new ObjectMapper();
         return mapper.readValue(text, new TypeReference<>() {
         });
@@ -111,8 +114,8 @@ public class TopicsService {
     public List<TopicLiteDTO> getAllTopicLiteDTO() {
         List<TopicLiteDTO> result = new ArrayList<>();
         try {
-            var text = new RestAuthCall(String
-                    .format("%s%sdto/lite", uriProvider.getUri(SERVICE_ID), DIRECT_MULTIPLE)).get();
+            var text = restAuthCall.get(String
+                .format("%s%sdto/lite", uriProvider.getUri(SERVICE_ID), DIRECT_MULTIPLE));
             var mapper = new ObjectMapper();
             result = mapper.readValue(text, new TypeReference<>() {
             });
@@ -133,7 +136,7 @@ public class TopicsService {
         try {
             var url = String
                     .format("%s%sdto/lite/%d", uriProvider.getUri(SERVICE_ID), DIRECT_SINGLE, topicId);
-            var text = new RestAuthCall(url).get();
+            var text = restAuthCall.get(url);
             var mapper = new ObjectMapper();
             TopicLiteDTO topicLiteDto = mapper.readValue(text, new TypeReference<>() {
             });

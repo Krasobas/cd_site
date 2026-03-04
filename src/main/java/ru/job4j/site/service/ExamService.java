@@ -16,15 +16,16 @@ import java.nio.charset.StandardCharsets;
 public class ExamService {
 
     private final EurekaUriProvider uriProvider;
+    private final RestAuthCall restAuthCall;
     private static final String SERVICE_ID = "generator";
     private static final String DIRECT = "/exam/";
 
     public Exam create(String token, String vacancyLink)
             throws Exception {
         String encodedUrl = URLEncoder.encode(vacancyLink, StandardCharsets.UTF_8);
-        var text = new RestAuthCall(String
-                .format("%s%screate/?url=%s", uriProvider.getUri(SERVICE_ID), DIRECT, encodedUrl))
-                .get(token);
+        var text = restAuthCall
+                .get(String
+                    .format("%s%screate/?url=%s", uriProvider.getUri(SERVICE_ID), DIRECT, encodedUrl), token);
         return new ObjectMapper().readValue(text, Exam.class);
     }
 }

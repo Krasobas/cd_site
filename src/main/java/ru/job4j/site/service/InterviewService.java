@@ -23,34 +23,29 @@ public class InterviewService {
 
     private final ProfilesService profilesService;
     private final EurekaUriProvider uriProvider;
+    private final RestAuthCall restAuthCall;
     private static final String SERVICE_ID = "mock";
     private static final String DIRECT = "/interview/";
 
     public InterviewDTO create(String token, InterviewDTO interviewDTO) throws JsonProcessingException {
         interviewDTO.setStatusId(StatusInterview.IS_NEW.getId());
         var mapper = new ObjectMapper();
-        var out = new RestAuthCall(String
-                .format("%s%s", uriProvider.getUri(SERVICE_ID), DIRECT)).post(
-                token,
-                mapper.writeValueAsString(interviewDTO)
-        );
+        var url = String.format("%s%s", uriProvider.getUri(SERVICE_ID), DIRECT);
+        var out = restAuthCall.post(url, token, mapper.writeValueAsString(interviewDTO));
         return mapper.readValue(out, InterviewDTO.class);
     }
 
     public InterviewDTO getById(String token, int id) throws JsonProcessingException {
-        var text = new RestAuthCall(String
-                .format("%s%s%d", uriProvider.getUri(SERVICE_ID), DIRECT, id))
-                .get(token);
+        var url = String.format("%s%s%d", uriProvider.getUri(SERVICE_ID), DIRECT, id);
+        var text = restAuthCall.get(url, token);
         return new ObjectMapper().readValue(text, new TypeReference<>() {
         });
     }
 
     public void update(String token, InterviewDTO interviewDTO) throws JsonProcessingException {
         var mapper = new ObjectMapper();
-        new RestAuthCall(String
-                .format("%s%s", uriProvider.getUri(SERVICE_ID), DIRECT)).update(
-                token,
-                mapper.writeValueAsString(interviewDTO));
+        var url = String.format("%s%s", uriProvider.getUri(SERVICE_ID), DIRECT);
+        restAuthCall.update(url, token, mapper.writeValueAsString(interviewDTO));
     }
 
     /**
@@ -62,10 +57,8 @@ public class InterviewService {
     public void updateStatus(String token, InterviewDTO interviewDTO) {
         try {
             var mapper = new ObjectMapper();
-            new RestAuthCall(String
-                    .format("%s%sstatus/", uriProvider.getUri(SERVICE_ID), DIRECT)).put(
-                    token,
-                    mapper.writeValueAsString(interviewDTO));
+            var url = String.format("%s%sstatus/", uriProvider.getUri(SERVICE_ID), DIRECT);
+            restAuthCall.put(url, token, mapper.writeValueAsString(interviewDTO));
         } catch (Exception e) {
             log.error("API service MOCK not found, error: {}", e.getMessage());
         }
@@ -94,11 +87,11 @@ public class InterviewService {
             var person = profilesService.getProfileById(wisherDto.getUserId());
             if (person.isPresent()) {
                 var wisherUser = new WisherDetailDTO(wisherDto.getId(),
-                        wisherDto.getInterviewId(),
-                        wisherDto.getUserId(),
-                        person.get().getUsername(),
-                        wisherDto.getContactBy(),
-                        wisherDto.isApprove());
+                    wisherDto.getInterviewId(),
+                    wisherDto.getUserId(),
+                    person.get().getUsername(),
+                    wisherDto.getContactBy(),
+                    wisherDto.isApprove());
                 wishersDetail.add(wisherUser);
             }
         }
