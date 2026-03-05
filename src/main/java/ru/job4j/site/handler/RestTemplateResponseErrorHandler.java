@@ -39,6 +39,9 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
             case SERVER_ERROR -> {
                 throw new UnknownException("Удалённый сервис вернул ошибку: " + status);
             }
+            default -> {
+                throw new UnknownException("Неизвестная ошибка: " + status);
+            }
         }
     }
 }

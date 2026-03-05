@@ -3,6 +3,7 @@ package ru.job4j.site.service;
 import org.junit.jupiter.api.Test;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import ru.job4j.site.dto.*;
+import ru.job4j.site.util.RestAuthCall;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,8 +23,9 @@ class InterviewServiceTest {
     private final ProfilesService profilesService = mock(ProfilesService.class);
     private final EurekaUriProvider uriProvider =
             new EurekaUriProvider(mock(DiscoveryClient.class));
+    private final RestAuthCall restAuthCall = mock(RestAuthCall.class);
     private final InterviewService interviewService =
-            new InterviewService(profilesService, uriProvider);
+            new InterviewService(profilesService, uriProvider, restAuthCall);
 
     @Test
     void injectedNotNull() {
