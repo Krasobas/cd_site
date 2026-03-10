@@ -88,8 +88,7 @@ public class InterviewController {
         var categoryWithTopicDTO = new CategoryWithTopicDTO(
                 categoryIdName.getId(), categoryIdName.getName(),
                 topicId, topicName, createInterview.getId(), interviewDTO.getSubmitterId());
-        notifications.notifyAboutInterviewCreation(token,
-                categoryWithTopicDTO);
+        notifications.notifyAboutInterviewCreation(categoryWithTopicDTO);
         var interviewNotifiDTO = InterviewNotifyDTO.of()
                 .id(interviewDTO.getId())
                 .submitterId(interviewDTO.getSubmitterId())
@@ -99,7 +98,7 @@ public class InterviewController {
                 .categoryId(categoryIdName.getId())
                 .categoryName(categoryIdName.getName())
                 .build();
-        notifications.sendSubscribeTopic(token, interviewNotifiDTO);
+        notifications.sendSubscribeTopic(interviewNotifiDTO);
         return "redirect:/interview/" + createInterview.getId();
     }
 
@@ -185,7 +184,7 @@ public class InterviewController {
                         interviewDTOfromDB.getCancelBy(),
                         wisherDto.getUserId()
                 );
-                notifications.sendParticipateCancelInterview(token, cancelInterviewDTO);
+                notifications.sendParticipateCancelInterview(cancelInterviewDTO);
             });
         }
         return "redirect:/interviews/";

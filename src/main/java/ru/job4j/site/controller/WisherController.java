@@ -56,7 +56,7 @@ public class WisherController {
         var contactBy = wisherNotifyDTO.getContactBy();
         var wisherDto = new WisherDto(0, interviewId, userId, contactBy, false);
         wisherService.saveWisherDto(token, wisherDto);
-        notificationService.sendParticipateAuthor(token, wisherNotifyDTO);
+        notificationService.sendParticipateAuthor(wisherNotifyDTO);
         return "redirect:/interview/" + interviewId;
     }
 
@@ -84,7 +84,7 @@ public class WisherController {
         interviewService.updateStatus(token, interviewDto);
         wisherApprovedDTO.setInterviewLink(
                 String.format("%sinterview/%d", url, Integer.parseInt(interviewId)));
-        CompletableFuture.runAsync(() -> notificationService.approvedWisher(token, wisherApprovedDTO));
+        CompletableFuture.runAsync(() -> notificationService.approvedWisher(wisherApprovedDTO));
         List<WisherDto> wisherDtoList = wisherService.getAllWisherDtoByInterviewId(token, interviewId)
                 .stream().filter(x -> x.getId() != wisherApprovedDTO.getWisherId()).toList();
         if (!wisherDtoList.isEmpty()) {
@@ -98,7 +98,7 @@ public class WisherController {
                         w.getUserId());
                 wisherDismissedDTOList.add(wisherDismissedDTO);
             });
-            notificationService.sendParticipantIsDismissed(token, wisherDismissedDTOList);
+            notificationService.sendParticipantIsDismissed(wisherDismissedDTOList);
         }
         return "redirect:/interview/" + interviewId;
     }

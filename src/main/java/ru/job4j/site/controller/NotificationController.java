@@ -22,7 +22,7 @@ public class NotificationController {
     public String createSubscribeCategory(@PathVariable("userId") int userId,
                                           @PathVariable("categoryId") int categoryId,
                                           HttpServletRequest req) throws JsonProcessingException {
-        notificationService.addSubscribeCategory(getToken(req), userId, categoryId);
+        notificationService.addSubscribeCategory(userId, categoryId);
         return "redirect:/categories/";
     }
 
@@ -30,7 +30,7 @@ public class NotificationController {
     public String deleteSubscribeCategory(@PathVariable("userId") int userId,
                                           @PathVariable("categoryId") int categoryId,
                                           HttpServletRequest req) throws JsonProcessingException {
-        notificationService.deleteSubscribeCategory(getToken(req), userId, categoryId);
+        notificationService.deleteSubscribeCategory(userId, categoryId);
         return "redirect:/categories/";
     }
 
@@ -39,7 +39,7 @@ public class NotificationController {
                                        @PathVariable("categoryId") int categoryId,
                                        @PathVariable("topicId") int topicId,
                                        HttpServletRequest req) throws JsonProcessingException {
-        notificationService.addSubscribeTopic(getToken(req), userId, topicId);
+        notificationService.addSubscribeTopic(userId, topicId);
         return "redirect:/topics/" + categoryId;
     }
 
@@ -48,7 +48,7 @@ public class NotificationController {
                                        @PathVariable("categoryId") int categoryId,
                                        @PathVariable("topicId") int topicId,
                                        HttpServletRequest req) throws JsonProcessingException {
-        notificationService.deleteSubscribeTopic(getToken(req), userId, topicId);
+        notificationService.deleteSubscribeTopic(userId, topicId);
         return "redirect:/topics/" + categoryId;
     }
 
@@ -56,7 +56,7 @@ public class NotificationController {
     public String createSubscribeTopicFromDetails(@PathVariable("userId") int userId,
                                                   @PathVariable("topicId") int topicId,
                                                   HttpServletRequest req) throws JsonProcessingException {
-        notificationService.addSubscribeTopic(getToken(req), userId, topicId);
+        notificationService.addSubscribeTopic(userId, topicId);
         return "redirect:/topic/" + topicId;
     }
 
@@ -64,7 +64,7 @@ public class NotificationController {
     public String deleteSubscribeTopicFromDetails(@PathVariable("userId") int userId,
                                                   @PathVariable("topicId") int topicId,
                                                   HttpServletRequest req) throws JsonProcessingException {
-        notificationService.deleteSubscribeTopic(getToken(req), userId, topicId);
+        notificationService.deleteSubscribeTopic(userId, topicId);
         return "redirect:/topic/" + topicId;
     }
 }
